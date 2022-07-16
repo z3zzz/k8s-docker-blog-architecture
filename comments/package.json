@@ -1,0 +1,34 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon src/index.ts --exec ts-node | pino-pretty",
+    "start": "node dist/index.js | pino-pretty",
+    "build": "esbuild ./src --bundle --minify --platform=node --external:pg-native --outfile=dist/index.js",
+    "test": "jest --forceExit --detectOpenHandles"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.0.0",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "fastify": "^4.1.0",
+    "pg": "^8.7.3",
+    "pino-pretty": "^8.1.0",
+    "redis": "^4.1.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.18.6",
+    "@babel/preset-env": "^7.18.6",
+    "@babel/preset-typescript": "^7.18.6",
+    "@types/jest": "^28.1.4",
+    "@types/node": "^18.0.0",
+    "@types/pg": "^8.6.5",
+    "esbuild": "^0.14.47",
+    "jest": "^28.1.2",
+    "nodemon": "^2.0.18",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.4"
+  }
+}
