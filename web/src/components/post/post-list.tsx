@@ -1,4 +1,4 @@
-import CommentList from '../comment-list';
+import Comment from '../comment';
 import { PostItem } from '.';
 import './post-list.css';
 
@@ -12,7 +12,7 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
       {posts.map((post) => (
         <div key={post.id} className="post-item">
           <h2>{post.title}</h2>
-          <CommentList postId={post.id} />
+          <Comment postId={post.id} />
         </div>
       ))}
     </div>

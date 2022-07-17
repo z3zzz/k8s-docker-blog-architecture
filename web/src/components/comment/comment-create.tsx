@@ -1,11 +1,11 @@
 import { SetStateAction, useState } from 'react';
-import * as Api from '../../utils/api';
-import { Comment } from '../comment-list';
+import { CommentItem } from '.';
+import Api from '../../utils/api';
 import './comment-create.css';
 
 interface CommentCreateProps {
   postId: string;
-  setComments: React.Dispatch<SetStateAction<Comment[]>>;
+  setComments: React.Dispatch<SetStateAction<CommentItem[]>>;
 }
 
 const CommentCreate: React.FC<CommentCreateProps> = ({
