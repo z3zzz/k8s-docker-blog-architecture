@@ -1,1 +1,26 @@
 /* css */
+.post-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.post-item {
+  border: #555 solid 0.2px;
+  margin: 0.5rem 1rem 0.5rem 0;
+  padding: 0 1rem 0.3rem 1rem;
+  background-color: #e9f3f5;
+}
+
+.post-item h2,
+.post-item ul {
+  margin: 0;
+}
+
+.post-item ul {
+  margin-bottom: 0.5rem;
+}
+
+.post-item p {
+  margin: 0;
+  margin-left: 0.3rem;
+}

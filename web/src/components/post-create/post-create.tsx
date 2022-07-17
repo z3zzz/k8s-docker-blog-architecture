@@ -11,7 +11,9 @@ const PostCreate: React.FC<PostCreateProps> = ({ setPosts }) => {
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const onSubmit = async () => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     await Api.post('/post', { title: value });
 
     const { data } = await Api.get('/posts');
@@ -34,10 +36,13 @@ const PostCreate: React.FC<PostCreateProps> = ({ setPosts }) => {
 
   return (
     <form onSubmit={onSubmit}>
+      <h2>Create Post</h2>
       <label>
-        Post <br />
+        Title <br />
         <input ref={inputRef} value={value} onChange={onChange} />
       </label>
+      <br />
+      <br />
       <button>Submit</button>
     </form>
   );

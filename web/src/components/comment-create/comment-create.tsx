@@ -1,4 +1,4 @@
-import { SetStateAction, useEffect, useState, useRef } from 'react';
+import { SetStateAction, useState } from 'react';
 import * as Api from '../../utils/api';
 import { Comment } from '../comment-list';
 import './comment-create.css';
@@ -13,9 +13,10 @@ const CommentCreate: React.FC<CommentCreateProps> = ({
   setComments,
 }) => {
   const [value, setValue] = useState('');
-  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const onSubmit = async () => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     await Api.post('/comment', { postId, content: value });
 
     const { data } = await Api.get(`/comments?postId=${postId}`);
@@ -28,20 +29,14 @@ const CommentCreate: React.FC<CommentCreateProps> = ({
     setValue(e.target.value);
   };
 
-  useEffect(() => {
-    if (!inputRef.current) {
-      return;
-    }
-
-    inputRef.current.focus();
-  });
-
   return (
     <form onSubmit={onSubmit}>
       <label>
         Comment <br />
-        <input ref={inputRef} value={value} onChange={onChange} />
+        <input value={value} onChange={onChange} />
       </label>
+      <br />
+      <br />
       <button>Submit</button>
     </form>
   );

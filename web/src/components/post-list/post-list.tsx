@@ -1,3 +1,4 @@
+import CommentList from '../comment-list';
 import './post-list.css';
 
 export interface Post {
@@ -13,9 +14,9 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
   return (
     <div className="post-list">
       {posts.map((post) => (
-        <div key={post.id} className="post">
-          <h3>{post.title}</h3>
-          <div>commentlist</div>
+        <div key={post.id} className="post-item">
+          <h2>{post.title}</h2>
+          <CommentList postId={post.id} />
         </div>
       ))}
     </div>
