@@ -16,7 +16,6 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
         <div key={post.id} className="post">
           <h3>{post.title}</h3>
           <div>commentlist</div>
-          <div>commentcreate</div>
         </div>
       ))}
     </div>
