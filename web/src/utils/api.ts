@@ -1,17 +1,14 @@
 import axios from 'axios';
-
-const { protocol, hostname } = window.location;
-const backendPort = process.env.REACT_APP_BACKEND_PORT || 5000;
-const baseUrl = `${protocol}//${hostname}:${backendPort}`;
+import { commentApiOrigin, postApiOrigin } from './constants';
 
 async function get(endpoint: string) {
-  return axios.get(baseUrl + endpoint);
+  return axios.get(createUrl(endpoint));
 }
 
 async function post(endpoint: string, data: any) {
   const bodyData = JSON.stringify(data);
 
-  return axios.post(baseUrl + endpoint, bodyData, {
+  return axios.post(createUrl(endpoint), bodyData, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -21,7 +18,7 @@ async function post(endpoint: string, data: any) {
 async function patch(endpoint: string, data: any) {
   const bodyData = JSON.stringify(data);
 
-  return axios.put(baseUrl + endpoint, bodyData, {
+  return axios.put(createUrl(endpoint), bodyData, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -29,7 +26,19 @@ async function patch(endpoint: string, data: any) {
 }
 
 async function del(endpoint: string) {
-  return axios.delete(baseUrl + endpoint);
+  return axios.delete(createUrl(endpoint));
+}
+
+function createUrl(endpoint: string): string {
+  if (endpoint.startsWith('/comment')) {
+    return commentApiOrigin + endpoint;
+  }
+
+  if (endpoint.startsWith('/post')) {
+    return postApiOrigin + endpoint;
+  }
+
+  return endpoint;
 }
 
 export { get, post, patch, del as delete };
