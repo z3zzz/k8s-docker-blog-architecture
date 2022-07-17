@@ -1,19 +1,32 @@
+import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import PostList, { Post } from './components/post-list';
+import PostCreate from './components/post-create';
+import * as Api from './utils/api';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-root.render(
-  <div>
-    <h1>Hello!</h1>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<div>home</div>} />
-        <Route path="/login" element={<div>login</div>} />
-        <Route path="/register" element={<div>register</div>} />
-      </Routes>
-    </BrowserRouter>
-  </div>
-);
+const App: React.FC = () => {
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  useEffect(() => {
+    const getPosts = async () => {
+      const { data } = await Api.get('/posts');
+      setPosts(data);
+    };
+
+    getPosts();
+  }, []);
+
+  return (
+    <div>
+      <PostCreate setPosts={setPosts} />
+      <hr />
+      <PostList posts={posts} />
+    </div>
+  );
+};
+
+root.render(<App />);
