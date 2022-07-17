@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import * as Api from '../../utils/api';
+import CommentCreate from '../comment-create';
 import './comment-list.css';
 
 interface CommentListProps {
   postId: string;
 }
 
-interface Comment {
+export interface Comment {
   id: string;
-  comment: string;
+  content: string;
 }
 
 const CommentList: React.FC<CommentListProps> = ({ postId }) => {
@@ -16,11 +17,27 @@ const CommentList: React.FC<CommentListProps> = ({ postId }) => {
 
   useEffect(() => {
     const getComments = async (postId: string) => {
-      const comments = Api.get(``);
-    };
-  });
+      const { data }: { data: Comment[] } = await Api.get(
+        `/comments?postId=${postId}`
+      );
 
-  return <div>header</div>;
+      setComments(data);
+    };
+
+    getComments(postId);
+  }, [postId]);
+
+  return (
+    <div>
+      <p>{`${comments.length} comments`}</p>
+      <ul>
+        {comments.map((comment) => (
+          <li key={comment.id}>{comment.content}</li>
+        ))}
+      </ul>
+      <CommentCreate postId={postId} setComments={setComments} />
+    </div>
+  );
 };
 
 export default CommentList;
