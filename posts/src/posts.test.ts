@@ -7,10 +7,10 @@ app.register(postRoutes);
 describe('posts api test', () => {
   const newPost = { title: 'this is a post' };
 
-  it('Post /posts - sends {result: success} in json', async () => {
+  it('Post /post - sends {result: success} in json', async () => {
     const res = await app.inject({
       method: 'POST',
-      url: '/posts',
+      url: '/post',
       payload: newPost,
     });
 
