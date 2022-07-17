@@ -1,13 +1,9 @@
 import CommentList from '../comment-list';
+import { PostItem } from '.';
 import './post-list.css';
 
-export interface Post {
-  id: string;
-  title: string;
-}
-
 interface PostListProps {
-  posts: Post[];
+  posts: PostItem[];
 }
 
 const PostList: React.FC<PostListProps> = ({ posts }) => {

@@ -1,10 +1,10 @@
 import { SetStateAction, useEffect, useState, useRef } from 'react';
-import * as Api from '../../utils/api';
-import { Post } from '../post-list';
+import Api from '../../utils/api';
+import { PostItem } from '.';
 import './post-create.css';
 
 interface PostCreateProps {
-  setPosts: React.Dispatch<SetStateAction<Post[]>>;
+  setPosts: React.Dispatch<SetStateAction<PostItem[]>>;
 }
 
 const PostCreate: React.FC<PostCreateProps> = ({ setPosts }) => {
