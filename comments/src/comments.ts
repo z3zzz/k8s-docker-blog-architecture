@@ -7,7 +7,7 @@ import { randomBytes } from 'crypto';
 
 interface Comment {
   id: string;
-  comment: string;
+  content: string;
 }
 
 interface AllComments {
@@ -24,7 +24,7 @@ interface GetComments {
 interface PostComment {
   Body: {
     postId: string;
-    comment: string;
+    content: string;
   };
   Reply: {
     result: 'success';
@@ -55,7 +55,7 @@ export async function commentRoutes(
             type: 'object',
             properties: {
               id: { type: 'string' },
-              comment: { type: 'string' },
+              content: { type: 'string' },
             },
           },
         },
@@ -80,7 +80,7 @@ export async function commentRoutes(
         type: 'object',
         properties: {
           postId: { type: 'string' },
-          comment: { type: 'string' },
+          content: { type: 'string' },
         },
       },
       response: {
@@ -99,11 +99,11 @@ export async function commentRoutes(
     opts['post-comments'],
     async (req, res) => {
       const id = randomBytes(4).toString('hex');
-      const { postId, comment } = req.body;
+      const { postId, content } = req.body;
 
       const comments = allComments[postId] || [];
 
-      allComments[postId] = [...comments, { id, comment }];
+      allComments[postId] = [...comments, { id, content }];
 
       res.code(201);
       return { result: 'success' };

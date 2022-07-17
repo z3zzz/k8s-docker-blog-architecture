@@ -6,8 +6,8 @@ app.register(commentRoutes);
 
 describe('comments api test', () => {
   const postId = 'dk2dvla';
-  const comment = 'this is a post';
-  const newComment = { postId, comment };
+  const content = 'this is a post';
+  const newComment = { postId, content };
 
   it('Post /comment - sends {result: success} in json', async () => {
     const res = await app.inject({
@@ -30,7 +30,7 @@ describe('comments api test', () => {
     });
 
     const body = JSON.parse(res.body);
-    const elem = expect.objectContaining({ comment });
+    const elem = expect.objectContaining({ content });
     const arr = expect.arrayContaining([elem]);
 
     expect(res.statusCode).toBe(200);
