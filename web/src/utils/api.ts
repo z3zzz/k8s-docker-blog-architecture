@@ -41,4 +41,6 @@ function createUrl(endpoint: string): string {
   return endpoint;
 }
 
-export { get, post, patch, del as delete };
+const Api = { get, post, patch, delete: del };
+
+export default Api;
