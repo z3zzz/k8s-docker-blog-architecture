@@ -4,7 +4,7 @@ import {
   RouteShorthandOptions,
 } from 'fastify';
 import axios from 'axios';
-import { postApiOrigin, commentApiOrigin, serviceApiOrigin } from './constants';
+import { postApiOrigin, commentApiOrigin, queryApiOrigin } from './constants';
 
 interface PostEvent {
   Body: {
@@ -51,9 +51,12 @@ export async function eventBusRoutes(
 
     console.log({ eventType, eventData });
 
-    axios.post(`${postApiOrigin}/event`, eventData);
-    axios.post(`${commentApiOrigin}/event`, eventData);
-    axios.post(`${serviceApiOrigin}/event`, eventData);
+    //axios.post(`${postApiOrigin}/event`, eventData);
+    //axios.post(`${commentApiOrigin}/event`, eventData);
+    axios.post(`${queryApiOrigin}/event`, {
+      eventType,
+      eventData,
+    });
 
     res.code(201);
     return { result: 'success' };
