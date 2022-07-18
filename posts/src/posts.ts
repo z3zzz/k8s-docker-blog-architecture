@@ -4,6 +4,8 @@ import {
   RouteShorthandOptions,
 } from 'fastify';
 import { randomBytes } from 'crypto';
+import axios from 'axios';
+import { eventBusApiOrigin } from './constants';
 
 interface Post {
   id: string;
@@ -77,6 +79,11 @@ export async function postRoutes(
     const { title } = req.body;
 
     posts.push({ id, title });
+
+    await axios.post(`${eventBusApiOrigin}/event`, {
+      eventType: 'PostCreated',
+      eventData: { id, title },
+    });
 
     res.code(201);
     return { result: 'success' };

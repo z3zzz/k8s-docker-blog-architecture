@@ -4,6 +4,8 @@ import {
   RouteShorthandOptions,
 } from 'fastify';
 import { randomBytes } from 'crypto';
+import axios from 'axios';
+import { eventBusApiOrigin } from './constants';
 
 interface Comment {
   id: string;
@@ -104,6 +106,11 @@ export async function commentRoutes(
       const comments = allComments[postId] || [];
 
       allComments[postId] = [...comments, { id, content }];
+
+      await axios.post(`${eventBusApiOrigin}/event`, {
+        eventType: 'CommentCreated',
+        eventData: { postId, id, content },
+      });
 
       res.code(201);
       return { result: 'success' };

@@ -6,7 +6,7 @@ app.register(commentRoutes);
 
 describe('comments api test', () => {
   const postId = 'dk2dvla';
-  const content = 'this is a comment';
+  const content = 'this is a post';
   const newComment = { postId, content };
 
   it('Post /comment - sends {result: success} in json', async () => {
