@@ -1,9 +1,11 @@
 import Comment from '../comment';
 import { PostItem } from '.';
 import './post-list.css';
+import { Dispatch, SetStateAction } from 'react';
 
 interface PostListProps {
   posts: PostItem[];
+  setPosts: Dispatch<SetStateAction<PostItem[]>>;
 }
 
 const PostList: React.FC<PostListProps> = ({ posts }) => {
@@ -12,7 +14,7 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
       {posts.map((post) => (
         <div key={post.id} className="post-item">
           <h2>{post.title}</h2>
-          <Comment postId={post.id} />
+          <Comment postId={post.id} previousComments={post.comments} />
         </div>
       ))}
     </div>

@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import PostList from './post-list';
 import PostCreate from './post-create';
 import Api from '../../utils/api';
+import { CommentItem } from '../comment';
 
 export interface PostItem {
   id: string;
   title: string;
+  comments: CommentItem[];
 }
 
 const Post: React.FC = () => {
@@ -13,7 +15,7 @@ const Post: React.FC = () => {
 
   useEffect(() => {
     const getPosts = async () => {
-      const { data } = await Api.get('/posts');
+      const { data } = await Api.get('/query/posts');
       setPosts(data);
     };
 
@@ -24,7 +26,7 @@ const Post: React.FC = () => {
     <div>
       <PostCreate setPosts={setPosts} />
       <hr />
-      <PostList posts={posts} />
+      <PostList posts={posts} setPosts={setPosts} />
     </div>
   );
 };

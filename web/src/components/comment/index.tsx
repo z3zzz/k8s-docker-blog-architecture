@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-import Api from '../../utils/api';
+import { useState } from 'react';
 import CommentList from './comment-list';
 import CommentCreate from './comment-create';
 
 interface CommentProps {
   postId: string;
+  previousComments: CommentItem[];
 }
 
 export interface CommentItem {
@@ -12,20 +12,8 @@ export interface CommentItem {
   content: string;
 }
 
-const Comment: React.FC<CommentProps> = ({ postId }) => {
-  const [comments, setComments] = useState<CommentItem[]>([]);
-
-  useEffect(() => {
-    const getComments = async () => {
-      const { data }: { data: CommentItem[] } = await Api.get(
-        `/comments?postId=${postId}`
-      );
-
-      setComments(data);
-    };
-
-    getComments();
-  }, [postId]);
+const Comment: React.FC<CommentProps> = ({ postId, previousComments }) => {
+  const [comments, setComments] = useState<CommentItem[]>(previousComments);
 
   return (
     <div>

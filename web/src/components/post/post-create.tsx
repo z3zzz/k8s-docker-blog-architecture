@@ -16,7 +16,7 @@ const PostCreate: React.FC<PostCreateProps> = ({ setPosts }) => {
 
     await Api.post('/post', { title: value });
 
-    const { data } = await Api.get('/posts');
+    const { data } = await Api.get('/query/posts');
     setPosts(data);
 
     setValue('');
