@@ -133,7 +133,7 @@ export async function queryRoutes(
 
     if (eventType === 'CommentCreated') {
       const newComment = eventData as EventComment;
-      const commentedPost = posts.find((post) => (post.id = newComment.postId));
+      const commentedPost = posts.find((post) => post.id === newComment.postId);
 
       if (commentedPost) {
         commentedPost.comments.push(newComment);
