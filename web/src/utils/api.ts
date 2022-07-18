@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { commentApiOrigin, postApiOrigin } from './constants';
+import { commentApiOrigin, postApiOrigin, queryApiOrigin } from './constants';
 
 async function get(endpoint: string) {
   return axios.get(createUrl(endpoint));
@@ -36,6 +36,10 @@ function createUrl(endpoint: string): string {
 
   if (endpoint.startsWith('/post')) {
     return postApiOrigin + endpoint;
+  }
+
+  if (endpoint.startsWith('/query')) {
+    return queryApiOrigin + endpoint.replace('/query', '');
   }
 
   return endpoint;
