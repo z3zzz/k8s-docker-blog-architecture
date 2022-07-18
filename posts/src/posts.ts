@@ -48,6 +48,7 @@ export async function postRoutes(
 
   interface PostPosts {
     Body: {
+      id: string;
       title: string;
     };
     Reply: {
@@ -61,6 +62,7 @@ export async function postRoutes(
         type: 'object',
         properties: {
           title: { type: 'string' },
+          id: { type: 'string' },
         },
       },
       response: {
@@ -74,13 +76,12 @@ export async function postRoutes(
     },
   };
 
-  router.post<PostPosts>('/post', opts['post-posts'], async (req, res) => {
-    const id = randomBytes(4).toString('hex');
-    const { title } = req.body;
+  router.post<PostPosts>('/post', opts['post-posts'], (req, res) => {
+    const { id, title } = req.body;
 
     posts.push({ id, title });
 
-    await axios.post(`${eventBusApiOrigin}/event`, {
+    axios.post(`${eventBusApiOrigin}/event`, {
       eventType: 'PostCreated',
       eventData: { id, title },
     });

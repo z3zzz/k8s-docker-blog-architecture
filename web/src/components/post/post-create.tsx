@@ -2,6 +2,7 @@ import { SetStateAction, useEffect, useState, useRef } from 'react';
 import Api from '../../utils/api';
 import { PostItem } from '.';
 import './post-create.css';
+import { randomId } from '../../utils/useful-functions';
 
 interface PostCreateProps {
   setPosts: React.Dispatch<SetStateAction<PostItem[]>>;
@@ -14,10 +15,12 @@ const PostCreate: React.FC<PostCreateProps> = ({ setPosts }) => {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    await Api.post('/post', { title: value });
+    const id = randomId();
+    const newPost = { id, title: value, comments: [] };
 
-    const { data } = await Api.get('/query/posts');
-    setPosts(data);
+    setPosts((posts) => [...posts, newPost]);
+
+    Api.post('/post', { id, title: value });
 
     setValue('');
   };

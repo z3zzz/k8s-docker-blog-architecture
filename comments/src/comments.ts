@@ -25,6 +25,7 @@ interface GetComments {
 
 interface PostComment {
   Body: {
+    id: string;
     postId: string;
     content: string;
   };
@@ -81,6 +82,7 @@ export async function commentRoutes(
       body: {
         type: 'object',
         properties: {
+          id: { type: 'string' },
           postId: { type: 'string' },
           content: { type: 'string' },
         },
@@ -100,14 +102,13 @@ export async function commentRoutes(
     '/comment',
     opts['post-comments'],
     async (req, res) => {
-      const id = randomBytes(4).toString('hex');
-      const { postId, content } = req.body;
+      const { id, postId, content } = req.body;
 
       const comments = allComments[postId] || [];
 
       allComments[postId] = [...comments, { id, content }];
 
-      await axios.post(`${eventBusApiOrigin}/event`, {
+      axios.post(`${eventBusApiOrigin}/event`, {
         eventType: 'CommentCreated',
         eventData: { postId, id, content },
       });

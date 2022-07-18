@@ -1,6 +1,7 @@
 import { SetStateAction, useState } from 'react';
 import { CommentItem } from '.';
 import Api from '../../utils/api';
+import { randomId } from '../../utils/useful-functions';
 import './comment-create.css';
 
 interface CommentCreateProps {
@@ -17,10 +18,12 @@ const CommentCreate: React.FC<CommentCreateProps> = ({
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    await Api.post('/comment', { postId, content: value });
+    const id = randomId();
+    const newComment = { id, content: value };
 
-    const { data } = await Api.get(`/comments?postId=${postId}`);
-    setComments(data);
+    setComments((comments) => [...comments, newComment]);
+
+    Api.post('/comment', { postId, content: value });
 
     setValue('');
   };
