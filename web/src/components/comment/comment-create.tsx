@@ -19,11 +19,16 @@ const CommentCreate: React.FC<CommentCreateProps> = ({
     e.preventDefault();
 
     const id = randomId();
-    const newComment = { id, content: value };
+    const newComment = {
+      id,
+      postId,
+      content: value,
+      status: 'pending',
+    } as CommentItem;
 
     setComments((comments) => [...comments, newComment]);
 
-    Api.post('/comment', { postId, content: value });
+    Api.post('/comment', newComment);
 
     setValue('');
   };

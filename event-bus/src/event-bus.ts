@@ -4,17 +4,28 @@ import {
   RouteShorthandOptions,
 } from 'fastify';
 import axios from 'axios';
-import { postApiOrigin, commentApiOrigin, queryApiOrigin } from './constants';
+import {
+  postApiOrigin,
+  commentApiOrigin,
+  queryApiOrigin,
+  moderationApiOrigin,
+} from './constants';
 
 interface PostEvent {
   Body: {
-    eventType: 'PostCreated' | 'CommentCreated';
+    eventType:
+      | 'PostCreated'
+      | 'CommentCreated'
+      | 'CommentUpdated'
+      | 'CommentModerated';
     eventData: any;
   };
   Reply: {
     result: 'success';
   };
 }
+
+const SUBSCRIBERS = [commentApiOrigin, queryApiOrigin, moderationApiOrigin];
 
 export async function eventBusRoutes(
   router: FastifyInstance,
@@ -30,7 +41,8 @@ export async function eventBusRoutes(
         properties: {
           eventType: {
             type: 'string',
-            pattern: '(PostCreated|CommentCreated)',
+            pattern:
+              '(PostCreated|CommentCreated|CommentUpdated|CommentModerated)',
           },
           eventData: {},
         },
@@ -51,12 +63,16 @@ export async function eventBusRoutes(
 
     console.log({ eventType, eventData });
 
-    //axios.post(`${postApiOrigin}/event`, eventData);
-    //axios.post(`${commentApiOrigin}/event`, eventData);
-    axios.post(`${queryApiOrigin}/event`, {
-      eventType,
-      eventData,
-    });
+    for (const origin of SUBSCRIBERS) {
+      try {
+        axios.post(`${origin}/event`, {
+          eventType,
+          eventData,
+        });
+      } catch (e: any) {
+        console.error(`Error occured in Post ${origin}: ${e.message}`);
+      }
+    }
 
     res.code(201);
     return { result: 'success' };

@@ -3,24 +3,25 @@ import {
   FastifyPluginOptions,
   RouteShorthandOptions,
 } from 'fastify';
-import { randomBytes } from 'crypto';
 import axios from 'axios';
 import { eventBusApiOrigin } from './constants';
 
 interface Comment {
   id: string;
   content: string;
+  status: string;
 }
 
-interface AllComments {
-  [key: string]: Comment[];
+interface CommentsForPost {
+  postId: string;
+  comments: Comment[];
 }
 
 interface GetComments {
   Querystring: {
     postId: string;
   };
-  Reply: Comment[];
+  Reply: CommentsForPost[];
 }
 
 interface PostComment {
@@ -28,13 +29,29 @@ interface PostComment {
     id: string;
     postId: string;
     content: string;
+    status: string;
   };
   Reply: {
     result: 'success';
   };
 }
 
-const allComments: AllComments = {};
+interface PostEvent {
+  Body: {
+    eventType: 'CommentModerated';
+    eventData: {
+      id: string;
+      postId: string;
+      content: string;
+      status: 'approved' | 'rejected';
+    };
+  };
+  Reply: {
+    result: 'success';
+  };
+}
+
+const allComments: CommentsForPost[] = [];
 
 export async function commentRoutes(
   router: FastifyInstance,
@@ -45,20 +62,24 @@ export async function commentRoutes(
   // json schema for data validation
   opts['get-comments'] = {
     schema: {
-      querystring: {
-        type: 'object',
-        properties: {
-          postId: { type: 'string' },
-        },
-      },
       response: {
         200: {
           type: 'array',
           items: {
             type: 'object',
             properties: {
-              id: { type: 'string' },
-              content: { type: 'string' },
+              postId: { type: 'string' },
+              comments: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'string' },
+                    content: { type: 'string' },
+                    status: { type: 'string' },
+                  },
+                },
+              },
             },
           },
         },
@@ -70,10 +91,8 @@ export async function commentRoutes(
     '/comments',
     opts['get-comments'],
     async (req, res) => {
-      const { postId } = req.query;
-      const comments = allComments[postId] || [];
-
-      return comments;
+      console.log({ allComments });
+      return allComments;
     }
   );
 
@@ -85,6 +104,7 @@ export async function commentRoutes(
           id: { type: 'string' },
           postId: { type: 'string' },
           content: { type: 'string' },
+          status: { type: 'string' },
         },
       },
       response: {
@@ -102,19 +122,84 @@ export async function commentRoutes(
     '/comment',
     opts['post-comments'],
     async (req, res) => {
-      const { id, postId, content } = req.body;
+      const { id, postId, content, status } = req.body;
 
-      const comments = allComments[postId] || [];
+      const commentsItem = allComments.find((item) => item.postId === postId);
 
-      allComments[postId] = [...comments, { id, content }];
+      if (!commentsItem) {
+        allComments.push({
+          postId,
+          comments: [{ id, content, status }],
+        });
+      } else {
+        commentsItem.comments.push({ id, content, status });
+      }
 
-      axios.post(`${eventBusApiOrigin}/event`, {
-        eventType: 'CommentCreated',
-        eventData: { postId, id, content },
-      });
+      try {
+        axios.post(`${eventBusApiOrigin}/event`, {
+          eventType: 'CommentCreated',
+          eventData: { postId, id, content, status },
+        });
+      } catch (e: any) {
+        console.error(`Error occured for Post to event-bus: ${e.message}`);
+      }
 
       res.code(201);
       return { result: 'success' };
     }
   );
+
+  opts['post-event'] = {
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          eventType: { type: 'string' },
+          eventData: {},
+        },
+      },
+      response: {
+        201: {
+          type: 'object',
+          properties: {
+            result: { type: 'string', pattern: 'success' },
+          },
+        },
+      },
+    },
+  };
+
+  router.post<PostEvent>('/event', opts['post-event'], async (req, res) => {
+    const { eventType, eventData } = req.body;
+
+    console.log({ eventType, eventData });
+
+    if (eventType === 'CommentModerated') {
+      const { id, postId, status } = eventData;
+
+      const commentsItem = allComments.find((item) => item.postId === postId);
+
+      if (!commentsItem) return;
+
+      const comment = commentsItem.comments.find(
+        (comment) => comment.id === id
+      );
+
+      if (!comment) return;
+
+      comment.status = status;
+
+      try {
+        axios.post(`${eventBusApiOrigin}/event`, {
+          eventType: 'CommentUpdated',
+          eventData: { ...comment, postId },
+        });
+      } catch (e: any) {
+        console.error(`Error occured for Post to event-bus: ${e.message}`);
+      }
+    }
+
+    res.code(201);
+    return { result: 'success' };
+  });
 }

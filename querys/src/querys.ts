@@ -4,15 +4,19 @@ import {
   RouteShorthandOptions,
 } from 'fastify';
 
+type CommentStatus = 'approved' | 'rejected' | 'pending';
+
 interface Comment {
   id: string;
   content: string;
+  status: CommentStatus;
 }
 
 interface EventComment {
   postId: string;
   id: string;
   content: string;
+  status: CommentStatus;
 }
 
 interface Post {
@@ -32,7 +36,7 @@ interface GetPosts {
 
 interface PostEvent {
   Body: {
-    eventType: 'PostCreated' | 'CommentCreated';
+    eventType: 'PostCreated' | 'CommentCreated' | 'CommentUpdated';
     eventData: EventPost | EventComment;
   };
   Reply: {
@@ -65,7 +69,11 @@ export async function queryRoutes(
                   type: 'object',
                   properties: {
                     id: { type: 'string' },
-                    content: { tpe: 'string' },
+                    content: { type: 'string' },
+                    status: {
+                      type: 'string',
+                      pattern: '(approved|rejected|pending)',
+                    },
                   },
                 },
               },
@@ -87,7 +95,6 @@ export async function queryRoutes(
         properties: {
           eventType: {
             type: 'string',
-            pattern: '(PostCreated|CommentCreated)',
           },
           eventData: {
             type: 'object',
@@ -138,6 +145,30 @@ export async function queryRoutes(
       if (commentedPost) {
         commentedPost.comments.push(newComment);
       }
+    }
+
+    if (eventType === 'CommentUpdated') {
+      const updatedComment = eventData as EventComment;
+      const { id, postId } = updatedComment;
+
+      const post = posts.find((post) => post.id === postId);
+
+      console.log({ post });
+
+      if (!post) return;
+
+      const commentIndex = post.comments.findIndex(
+        (comment) => comment.id === id
+      );
+
+      console.log({ commentIndex });
+
+      if (commentIndex === -1) return;
+
+      post.comments[commentIndex] = updatedComment;
+      console.log({
+        'post.comments[commentIndex]': post.comments[commentIndex],
+      });
     }
 
     res.code(201);

@@ -7,7 +7,7 @@ app.register(commentRoutes);
 describe('comments api test', () => {
   const postId = 'dk2dvla';
   const content = 'this is a comment';
-  const newComment = { postId, content };
+  const newComment = { postId, content, status: 'pending' };
 
   it('Post /comment - sends {result: success} in json', async () => {
     const res = await app.inject({

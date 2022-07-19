@@ -10,6 +10,7 @@ interface CommentProps {
 export interface CommentItem {
   id: string;
   content: string;
+  status: 'approved' | 'rejected' | 'pending';
 }
 
 const Comment: React.FC<CommentProps> = ({ postId, previousComments }) => {

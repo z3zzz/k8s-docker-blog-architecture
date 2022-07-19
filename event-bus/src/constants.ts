@@ -4,3 +4,5 @@ export const commentApiOrigin =
   process.env.COMMENT_API_ORIGN || 'http://localhost:5001';
 export const queryApiOrigin =
   process.env.QUERY_API_ORIGN || 'http://localhost:5002';
+export const moderationApiOrigin =
+  process.env.MODERATION_API_ORIGN || 'http://localhost:5003';

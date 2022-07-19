@@ -3,7 +3,6 @@ import {
   FastifyPluginOptions,
   RouteShorthandOptions,
 } from 'fastify';
-import { randomBytes } from 'crypto';
 import axios from 'axios';
 import { eventBusApiOrigin } from './constants';
 
@@ -81,10 +80,14 @@ export async function postRoutes(
 
     posts.push({ id, title });
 
-    axios.post(`${eventBusApiOrigin}/event`, {
-      eventType: 'PostCreated',
-      eventData: { id, title },
-    });
+    try {
+      axios.post(`${eventBusApiOrigin}/event`, {
+        eventType: 'PostCreated',
+        eventData: { id, title },
+      });
+    } catch (e: any) {
+      console.error(`Error occured in Post event-bus: ${e.message}`);
+    }
 
     res.code(201);
     return { result: 'success' };
