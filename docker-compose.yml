@@ -1,0 +1,67 @@
+services:
+  nginx:
+    container_name: nginx
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+  web:
+    container_name: web
+    build: 
+      context: ./web
+      dockerfile: Dockerfile
+    expose:
+      - 3000
+    environment:
+      - REACT_APP_ENVIRONMENT=production
+  posts:
+    container_name: posts
+    build: 
+      context: ./posts
+      dockerfile: Dockerfile
+    expose:
+      - 5000
+    environment:
+      - EVENT_BUS_API_ORIGIN=http://event-bus:5000
+  comments:
+    container_name: comments
+    build: 
+      context: ./comments
+      dockerfile: Dockerfile
+    expose:
+      - 5000
+    environment:
+      - EVENT_BUS_API_ORIGIN=http://event-bus:5000
+  querys:
+    container_name: querys
+    depends_on:
+      - event-bus
+    build: 
+      context: ./querys
+      dockerfile: Dockerfile
+    expose:
+      - 5000
+    environment:
+      - EVENT_BUS_API_ORIGIN=http://event-bus:5000
+  event-bus:
+    container_name: event-bus
+    build: 
+      context: ./event-bus
+      dockerfile: Dockerfile
+    environment:
+      - POST_API_ORIGIN=http://posts:5000
+      - COMMENT_API_ORIGIN=http://comments:5000
+      - QUERY_API_ORIGIN=http://querys:5000
+      - MODERATION_API_ORIGN=http://moderation:5000
+  moderation:
+    container_name: moderation
+    build: 
+      context: ./moderation
+      dockerfile: Dockerfile
+    environment:
+      - POST_API_ORIGIN=http://posts:5000
+      - COMMENT_API_ORIGIN=http://comments:5000
+      - QUERY_API_ORIGIN=http://querys:5000
+      - EVENT_BUS_API_ORIGIN=http://event-bus:5000
