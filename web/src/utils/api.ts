@@ -2,6 +2,7 @@ import axios from 'axios';
 import {
   commentApiOrigin,
   environment,
+  isDockerComposeDev,
   postApiOrigin,
   queryApiOrigin,
 } from './constants';
@@ -36,6 +37,10 @@ async function del(endpoint: string) {
 
 function createUrl(endpoint: string): string {
   if (environment === 'production') {
+    return endpoint;
+  }
+
+  if (isDockerComposeDev) {
     return endpoint;
   }
 

@@ -5,3 +5,4 @@ export const commentApiOrigin =
 export const queryApiOrigin =
   process.env.REACT_APP_QUERY_API_ORIGIN || 'http://localhost:5002';
 export const environment = process.env.NODE_ENV
+export const isDockerComposeDev = process.env.REACT_APP_DOCKER_COMPOSE_DEV

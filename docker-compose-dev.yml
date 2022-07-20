@@ -19,6 +19,7 @@ services:
       - 3000
     environment:
       - WDS_SOCKET_PORT=0
+      - REACT_APP_DOCKER_COMPOSE_DEV=true
   posts:
     container_name: posts
     build: 
