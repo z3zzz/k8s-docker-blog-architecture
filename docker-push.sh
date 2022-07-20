@@ -23,5 +23,5 @@ docker build -t kwangdock/k8s-docker-simple-blog-event-bus ./event-bus &&
 docker push kwangdock/k8s-docker-simple-blog-event-bus 
 
 # build and push moderation
-docker build -t kwangdock/k8s-docker-simple-blog ./moderation && 
+docker build -t kwangdock/k8s-docker-simple-blog-moderation ./moderation && 
 docker push kwangdock/k8s-docker-simple-blog-moderation
