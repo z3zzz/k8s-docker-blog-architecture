@@ -20,7 +20,7 @@ const PostCreate: React.FC<PostCreateProps> = ({ setPosts }) => {
 
     setPosts((posts) => [...posts, newPost]);
 
-    Api.post('/post', { id, title: value });
+    Api.post('/api/post', { id, title: value });
 
     setValue('');
   };

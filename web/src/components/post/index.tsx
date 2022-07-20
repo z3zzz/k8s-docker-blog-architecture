@@ -15,7 +15,7 @@ const Post: React.FC = () => {
 
   useEffect(() => {
     const getPosts = async () => {
-      const { data } = await Api.get('/query/posts');
+      const { data } = await Api.get('/api/query/posts');
       setPosts(data);
     };
 

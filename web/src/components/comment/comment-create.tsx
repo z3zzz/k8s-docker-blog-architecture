@@ -28,7 +28,7 @@ const CommentCreate: React.FC<CommentCreateProps> = ({
 
     setComments((comments) => [...comments, newComment]);
 
-    Api.post('/comment', newComment);
+    Api.post('/api/comment', newComment);
 
     setValue('');
   };
