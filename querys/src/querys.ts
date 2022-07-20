@@ -1,8 +1,10 @@
+import axios from 'axios';
 import {
   FastifyInstance,
   FastifyPluginOptions,
   RouteShorthandOptions,
 } from 'fastify';
+import { eventBusApiOrigin } from './constants';
 
 type CommentStatus = 'approved' | 'rejected' | 'pending';
 
@@ -132,46 +134,69 @@ export async function queryRoutes(
 
     console.log({ eventType, eventData });
 
-    if (eventType === 'PostCreated') {
-      const newPost = eventData as EventPost;
-
-      posts.push({ ...newPost, comments: [] });
-    }
-
-    if (eventType === 'CommentCreated') {
-      const newComment = eventData as EventComment;
-      const commentedPost = posts.find((post) => post.id === newComment.postId);
-
-      if (commentedPost) {
-        commentedPost.comments.push(newComment);
-      }
-    }
-
-    if (eventType === 'CommentUpdated') {
-      const updatedComment = eventData as EventComment;
-      const { id, postId } = updatedComment;
-
-      const post = posts.find((post) => post.id === postId);
-
-      console.log({ post });
-
-      if (!post) return;
-
-      const commentIndex = post.comments.findIndex(
-        (comment) => comment.id === id
-      );
-
-      console.log({ commentIndex });
-
-      if (commentIndex === -1) return;
-
-      post.comments[commentIndex] = updatedComment;
-      console.log({
-        'post.comments[commentIndex]': post.comments[commentIndex],
-      });
-    }
+    handleEvent(eventType, eventData);
 
     res.code(201);
     return { result: 'success' };
   });
+}
+
+export async function syncEvents(app: FastifyInstance) {
+  try {
+    const res = await axios.get(`${eventBusApiOrigin}/events`);
+    const pastEvents: { eventType: string; eventData: any }[] = res.data;
+
+    app.log.info('Event syncing...');
+
+    for (const event of pastEvents) {
+      const { eventType, eventData } = event;
+
+      handleEvent(eventType, eventData);
+    }
+
+    app.log.info(`Event sync completed. (Total ${pastEvents.length} events)`);
+  } catch (e: any) {
+    app.log.error(`Error occured for Post to event-bus: ${e.message}`);
+  }
+}
+
+function handleEvent(eventType: string, eventData: any) {
+  if (eventType === 'PostCreated') {
+    const newPost = eventData as EventPost;
+
+    posts.push({ ...newPost, comments: [] });
+  }
+
+  if (eventType === 'CommentCreated') {
+    const newComment = eventData as EventComment;
+    const commentedPost = posts.find((post) => post.id === newComment.postId);
+
+    if (commentedPost) {
+      commentedPost.comments.push(newComment);
+    }
+  }
+
+  if (eventType === 'CommentUpdated') {
+    const updatedComment = eventData as EventComment;
+    const { id, postId } = updatedComment;
+
+    const post = posts.find((post) => post.id === postId);
+
+    console.log({ post });
+
+    if (!post) return;
+
+    const commentIndex = post.comments.findIndex(
+      (comment) => comment.id === id
+    );
+
+    console.log({ commentIndex });
+
+    if (commentIndex === -1) return;
+
+    post.comments[commentIndex] = updatedComment;
+    console.log({
+      'post.comments[commentIndex]': post.comments[commentIndex],
+    });
+  }
 }
