@@ -136,12 +136,12 @@ export async function commentRoutes(
       }
 
       try {
-        axios.post(`${eventBusApiOrigin}/event`, {
+        await axios.post(`${eventBusApiOrigin}/event`, {
           eventType: 'CommentCreated',
           eventData: { postId, id, content, status },
         });
       } catch (e: any) {
-        console.error(`Error occured for Post to event-bus: ${e.message}`);
+        req.log.error(`Error occured for Post to event-bus: ${e.message}`);
       }
 
       res.code(201);
@@ -190,12 +190,12 @@ export async function commentRoutes(
       comment.status = status;
 
       try {
-        axios.post(`${eventBusApiOrigin}/event`, {
+        await axios.post(`${eventBusApiOrigin}/event`, {
           eventType: 'CommentUpdated',
           eventData: { ...comment, postId },
         });
       } catch (e: any) {
-        console.error(`Error occured for Post to event-bus: ${e.message}`);
+        req.log.error(`Error occured for Post to event-bus: ${e.message}`);
       }
     }
 

@@ -54,7 +54,7 @@ export async function moderationRoutes(
     },
   };
 
-  router.post<PostEvent>('/event', opts['post-event'], (req, res) => {
+  router.post<PostEvent>('/event', opts['post-event'], async (req, res) => {
     const { eventType, eventData } = req.body;
 
     console.log({ eventType, eventData });
@@ -64,12 +64,12 @@ export async function moderationRoutes(
       const commentAfterCheck = { ...eventData, status };
 
       try {
-        axios.post(`${eventBusApiOrigin}/event`, {
+        await axios.post(`${eventBusApiOrigin}/event`, {
           eventType: 'CommentModerated',
           eventData: commentAfterCheck,
         });
       } catch (e: any) {
-        console.error(`Error occured in Post event-bus: ${e.message}`);
+        req.log.error(`Error occured for Post to event-bus: ${e.message}`);
       }
     }
 

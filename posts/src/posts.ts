@@ -75,18 +75,18 @@ export async function postRoutes(
     },
   };
 
-  router.post<PostPosts>('/post', opts['post-posts'], (req, res) => {
+  router.post<PostPosts>('/post', opts['post-posts'], async (req, res) => {
     const { id, title } = req.body;
 
     posts.push({ id, title });
 
     try {
-      axios.post(`${eventBusApiOrigin}/event`, {
+      await axios.post(`${eventBusApiOrigin}/event`, {
         eventType: 'PostCreated',
         eventData: { id, title },
       });
     } catch (e: any) {
-      console.error(`Error occured in Post event-bus: ${e.message}`);
+      req.log.error(`Error occured for Post to event-bus: ${e.message}`);
     }
 
     res.code(201);
