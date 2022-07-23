@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: posts-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      component: posts
+  template:
+    metadata:
+      labels:
+        component: posts
+    spec:
+      containers:
+        - name: posts
+          image: kwangdock/k8s-docker-simple-blog-posts
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: EVENT_BUS_API_ORIGIN
+              value: http://event-bus-service:5000
+            - name: POSTS_PORT
+              value: "5000"

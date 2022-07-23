@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: querys-deployment
+spec:
+  # replica가 2 이상이면, 프론트에서 get /api/query/posts 요청 할 때마다
+  # 다른 replica가 응답하기에, 새로고침 때마다 다른 memory 데이터가 나오게 된다.
+  # 데이터는 1곳에 저장되어야 하며, pod가 stateless여야 한다.
+  # 본 폴더 프로젝트 특성상 pod가 stateful 이기 때문에, replica는 1이어야 한다.
+  replicas: 1
+  selector:
+    matchLabels:
+      component: querys
+  template:
+    metadata:
+      labels:
+        component: querys
+    spec:
+      containers:
+        - name: querys
+          image: kwangdock/k8s-docker-simple-blog-querys
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: EVENT_BUS_API_ORIGIN
+              value: http://event-bus-service:5000
+            - name: QUERYS_PORT
+              value: "5000"

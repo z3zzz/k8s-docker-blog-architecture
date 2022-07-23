@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comments-deployment
+spec:
+  # memory에 저장하는 특성상, comments pod가 2개 이상이면, 
+  # comment post 요청 받은 pod와 comment moderated 이벤트 받은 pod가 다를 수가 있는데,
+  # 이 경우 find comment가 안 되기 때문에 comment updated가 안 된다
+  # 따라서 querys처럼, replica가 1이어야 한다.
+  replicas: 1
+  selector:
+    matchLabels:
+      component: comments
+  template:
+    metadata:
+      labels:
+        component: comments
+    spec:
+      containers:
+        - name: comments
+          image: kwangdock/k8s-docker-simple-blog-comments
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: EVENT_BUS_API_ORIGIN
+              value: http://event-bus-service:5000
+            - name: COMMENTS_PORT
+              value: "5000"

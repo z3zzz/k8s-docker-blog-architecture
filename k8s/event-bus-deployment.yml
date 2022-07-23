@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-bus-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: event-bus
+  template:
+    metadata:
+      labels:
+        component: event-bus
+    spec:
+      containers:
+        - name: event-bus
+          image: kwangdock/k8s-docker-simple-blog-event-bus
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: POST_API_ORIGIN
+              value: http://posts-service:5000
+            - name: COMMENT_API_ORIGIN
+              value: http://comments-service:5000
+            - name: QUERY_API_ORIGIN
+              value: http://querys-service:5000
+            - name: MODERATION_API_ORIGIN
+              value: http://moderation-service:5000
+            - name: EVENT_BUS_PORT
+              value: "5000"
