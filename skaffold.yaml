@@ -1,0 +1,21 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: blog
+build:
+  local: 
+    push: false
+  artifacts:
+    - image: kwangdock/k8s-docker-simple-blog-comments
+      context: comments
+      docker:
+        dockerfile: Dockerfile
+      sync: 
+        manual:
+          - src: src/**/*
+            dest: app/
+deploy:
+  kubectl:
+    manifests:
+      - k8s/*comments*
+
